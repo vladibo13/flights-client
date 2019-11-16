@@ -11,6 +11,10 @@ class FlightsLogin extends React.Component<any, any> {
 		};
 	}
 
+	saveToLocalStorage = (key: any, value: any) => {
+		localStorage.setItem(key, JSON.stringify(value));
+	};
+
 	handleChange = (e: any) => {
 		const { target } = e;
 		this.setState({
@@ -22,9 +26,10 @@ class FlightsLogin extends React.Component<any, any> {
 		// console.log(this.state);
 		const result = await axios.post(mainURL, this.state);
 		//check if there some errors
-		const { error, message, redirect } = result.data;
+		const { error, message, redirect, session } = result.data;
 		if (error) return alert(error);
-		alert(message);
+		alert(`${message}. your session number: ${session}`);
+		this.saveToLocalStorage(`flight-session-${session}`, session);
 		//redirect if i pass from server to home page
 		if (redirect) this.props.history.push('/');
 	};
