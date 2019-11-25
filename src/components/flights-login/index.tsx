@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { connect } from 'react-redux';
+import { registerUser } from '../../redux/actions';
 const mainURL = 'http://localhost:5000/auth/login';
 
 class FlightsLogin extends React.Component<any, any> {
@@ -22,14 +24,20 @@ class FlightsLogin extends React.Component<any, any> {
 		});
 	};
 
+	// handleRegister = async () => {
+	// 	const { userLoginDetails, userLoginError, registerUser } = this.props;
+	// 	registerUser(this.state);
+	// 	console.log(this.props);
+	// };
+
 	handleRegister = async () => {
 		// console.log(this.state);
 		const result = await axios.post(mainURL, this.state);
 		//check if there some errors
-		const { error, message, redirect, session } = result.data;
+		const { error, message, redirect, session, token } = result.data;
 		if (error) return alert(error);
-		alert(`${message}. your session number: ${session}`);
-		this.saveToLocalStorage(`flight-session-${session}`, session);
+		alert(`${message}. your token number: ${token}`);
+		this.saveToLocalStorage(`flight-session-${token}`, token);
 		//redirect if i pass from server to home page
 		if (redirect) this.props.history.push('/');
 	};
@@ -70,4 +78,20 @@ class FlightsLogin extends React.Component<any, any> {
 	}
 }
 
-export default FlightsLogin;
+function mapDispatchToProps(dispatch: any) {
+	// return {};
+	return {
+		registerUser: (user: any) => {
+			dispatch(registerUser(user));
+		}
+	};
+}
+
+function mapStateToProps(state: any) {
+	console.log('state from redux');
+	return {
+		...state
+	};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FlightsLogin);
